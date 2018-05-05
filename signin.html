@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <title>403商城 - 用户登录</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://cdn.bootcss.com/js-cookie/latest/js.cookie.min.js"></script>
+  <style type="text/css">
+    html {
+      height: 100%;
+    }
+
+    body {
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .form-signin {
+      max-width: 330px;
+      margin: 0 auto;
+      padding: 15px;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+
+  <script type="text/javascript">
+    function signin() //登录
+    {
+      name = $("#input_user").val(); //取得用户名、密码
+      pwd = $("#input_password").val();
+      if (!validate()) return;
+      $.post("signin.php",  //发起post请求
+        {
+          username: name,
+          password: pwd
+        },
+        function (data, status) { //post请求回调
+          result = JSON.parse(data);  //解析json
+          if (result.code == 0) {  //登录成功
+            create_alertbox("#area_bottom", "登录成功!", "alert-success");
+            //把用户登录信息存cookie
+            //TODO：登录验证的安全性
+            Cookies.set("username", name, { expires: 1 });
+            Cookies.set("signin", 1, { expires: 1 });
+            window.location.assign("index2.html");//跳转到首页
+          }
+          else  //登录失败
+          {
+            create_alertbox("#area_bottom", "帐号或密码错误！", "alert-danger");
+            document.getElementById("input_password").focus();
+          }
+        }
+      );
+    }
+
+    function transform()  //改为注册的界面
+    {
+      $("#btn_signup").text("提交");
+      $("#btn_signup").attr("onclick", "signup()");
+      $("#btn_signin").attr("class", "btn btn-outline-primary btn-block");
+      $("#btn_signup").attr("class", "btn btn-primary btn-block");
+    }
+
+    function signup() //注册
+    {
+      name = $("#input_user").val(); //取得用户名、密码
+      pwd = $("#input_password").val();
+      if (!validate()) return;
+      $.post("signin.php",  //发起post请求
+        {
+          username: name,
+          password: pwd
+        },
+        function () {
+          create_alertbox("#area_bottom", "注册成功,请登录", "alert-success");
+        }
+      );
+    }
+
+    function validate() {
+      name = $("#input_user").val(); //取得用户名、密码
+      pwd = $("#input_password").val();
+      if (name == "" || pwd == "") {
+        create_alertbox("#area_bottom", "用户名或密码不能为空！", "alert-warning");
+        document.getElementById("input_user").focus();
+        return false;
+      }
+      return true;
+    }
+
+    //创建一个提示框，在parent中，消息为message，类型type(alert-success,alert-warning)
+    function create_alertbox(parent, message, type) {
+      $(parent).html(`<div class="alert ${type}">${message}<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button></div>`);
+    }
+  </script>
+
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="text-center">
+      <img src="images/logo.png" class="img mb-3" height="100px" width="100px" />
+      <h1>403商城</h1>
+    </div>
+
+    <form class="form-signin form-horizontal text-center" role="form" id="sign_form">
+      <input type="text" class="mt-5 mb-2 form-control" id="input_user" placeholder="User name" required autofocus>
+      <input type="password" class="mt-2 mb-4 form-control" id="input_password" placeholder="Password">
+      <button type="button" class="btn btn-primary btn-block" id="btn_signin" onclick="signin()">登录</button>
+      <button type="button" class="btn btn-outline-primary btn-block" id="btn_signup" onclick="transform()">注册</button>
+    </form>
+
+    <p class="mt-5 mb-3 text-muted text-center">403 Studio &copy; 2017-
+      <span id="year">2017</span>
+    </p>
+    <!--提示区域-->
+    <div id="area_bottom"></div>
+
+  </div>
+
+  <script type="text/javascript">
+    $("#year").html(new Date().getFullYear());
+  </script>
+
+</body>
+
+</html>
