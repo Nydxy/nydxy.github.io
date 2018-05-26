@@ -1,0 +1,21 @@
+@media (min-width:767px) {
+    #usrinfo {
+        position: absolute;
+        right: 60px;
+        display: inline;
+    }
+}
+
+@media (max-width:767px) {
+    #usrinfo {
+        display: none;
+    }
+}
+
+body {
+    padding-top: 70px;
+}
+
+.numbox {
+    padding: 0
+}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>403商城 - 首页</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="builds/jquery-1.11.2.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/js-cookie/latest/js.cookie.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+    <link href="http://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <link href="http://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js">
+
+
+    <script>
+        itemlist = [{
+            id: "1",
+            name: "CPU",
+            price: 1200,
+            sellerid: "0",
+            seller: "zhangzheng"
+        },
+        {
+            id: "2",
+            name: "SSD",
+            price: 400,
+            sellerid: "0",
+            seller: "zhangzheng"
+        }
+        ];
+
+        var localData = [
+            {
+                "ID": 202,
+                "CHAR": "1",
+                "TEXT": "TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_1",
+                "NUM": 11.2,
+                "XH": 1
+            },
+            {
+                "ID": 201,
+                "CHAR": "111",
+                "TEXT": "TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_2",
+                "XH": 2
+            },
+            {
+                "ID": 200,
+                "CHAR": "200",
+                "TEXT": "TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_3",
+                "XH": 3
+            },
+            {
+                "ID": 199,
+                "CHAR": "199",
+                "XH": 4
+            },
+            {
+                "ID": 32,
+                "CHAR": "34",
+                "NUM": 12.1,
+                "XH": 5
+            }];
+
+        $(function () {
+            gridObj = $.fn.bsgrid.init('searchTable', {
+                localData: localData,
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h2>jsGrid</h2>
+        <div id="jsGrid"></div>
+        <br/>
+        <script type="text/javascript">
+            var clients = [
+                { "Name": "Otto Clay", "Age": 25, "Country": 1, "Address": "Ap #897-1459 Quam Avenue", "Married": false },
+                { "Name": "Connor Johnston", "Age": 45, "Country": 2, "Address": "Ap #370-4647 Dis Av.", "Married": true },
+                { "Name": "Lacey Hess", "Age": 29, "Country": 3, "Address": "Ap #365-8835 Integer St.", "Married": false },
+                { "Name": "Timothy Henson", "Age": 56, "Country": 1, "Address": "911-5143 Luctus Ave", "Married": true },
+                { "Name": "Ramona Benton", "Age": 32, "Country": 3, "Address": "Ap #614-689 Vehicula Street", "Married": false }
+            ];
+
+            var countries = [
+                { Name: "", Id: 0 },
+                { Name: "United States", Id: 1 },
+                { Name: "Canada", Id: 2 },
+                { Name: "United Kingdom", Id: 3 }
+            ];
+
+            $("#jsGrid").jsGrid({
+                width: "100%",
+                height: "auto",
+
+                editing: true,
+                sorting: false,
+                paging: true,
+                filtering: false,
+                inserting: false,
+                paging: true,
+
+                data: clients,
+                fields: [
+                    { name: "Name", type: "text", width: 150, validate: "required", editing: false },
+                    { name: "Age", type: "number", width: 50 },
+                    { name: "Address", type: "text", width: 200 },
+                    { name: "Country", type: "select", items: countries, valueField: "Id", textField: "Name" },
+                    { name: "Married", type: "checkbox", title: "Is Married", sorting: false },
+                ]
+            });
+        </script>
+
+
+        <h2>bsgrid</h2>
+        <table id="searchTable">
+            <tr>
+                <th w_index="XH" width="5%;">XH</th>
+                <th w_index="ID" width="5%;">ID</th>
+                <th w_index="CHAR" w_align="left" width="15%;">CHAR</th>
+                <th w_index="TEXT" w_align="left" width="30%;">TEXT</th>
+                <th w_index="DATE" width="15%;">DATE</th>
+                <th w_index="TIME" width="15%;">TIME</th>
+                <th w_index="NUM" width="5%;">NUM</th>
+            </tr>
+        </table>
+
+    </div>
+
+
+</body>
+
+</html>

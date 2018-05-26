@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>403商城 - 首页</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/js.cookie.min.js"></script>
+
+    <script src="js/raydreams.js"></script>
+    <script src="js/globalstyle.js"></script>
+    <script src="js/global_api.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/customer-center.js"></script>
+    <script src="js/seller-center.js"></script>
+    <script src="js/admin-center.js"></script>
+
+    <script>
+
+
+    </script>
+
+
+</head>
+
+<body>
+    <div class="container" id="container">
+
+        <!-- 水平导航栏 固定 -->
+        <ul class="nav nav-tabs fixed-top navbar-light bg-light">
+            <img class="navbar-brand ml-2 mr-1" src="images/logo2.png" alt="Logo" style="height:40px;width:47px">
+            <a class="navbar-brand font-weight-bold " href="">403商城</a>
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home">首页</a>
+            </li>
+            <li class="nav-item" id="link-customer-center" style="display: none">
+                <a class="nav-link" data-toggle="tab" href="#customer-center" onclick="load_customer_center()">客户中心/购物车</a>
+            </li>
+            <li class="nav-item" id="link-seller-center" style="display: none">
+                <a class="nav-link" data-toggle="tab" href="#seller-center" onclick="load_seller_center()">商家中心</a>
+            </li>
+            <li class="nav-item" id="link-admin-center" style="display: none">
+                <a class="nav-link" data-toggle="tab" href="#admin-center" onclick="load_admin_center()">系统管理</a>
+            </li>
+            <div class="navbar-text" id="usrinfo">
+                <h5>
+                    <a href="signin.html">
+                        <span class="badge badge-secondary">请登录</span>
+                    </a>
+                </h5>
+            </div>
+        </ul>
+
+        <!-- Tabs-->
+        <div class="tab-content">
+
+            <!--首页-->
+            <div id="home" class="container tab-pane active">
+                <h3>欢迎光临403商城</h3>
+                <br/>
+
+                <div id="itemTable" class="table table-hover"></div>
+            </div>
+
+            <!-- 客户中心/购物车 -->
+            <div id="customer-center" class="container tab-pane">
+                <h3>客户资料</h3>
+                <form class="mt-4 mb-5" style="max-width: 400px;">
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">用户名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="customer_user_name" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">用户编号</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="customer_user_id" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">联系电话</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="customer_user_tel">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">地址</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="customer_user_addr">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">消费总额</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <span class="input-group-addon">￥</span>
+                                <input type="text" class="form-control" id="customer_user_total" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label"></label>
+                        <div class="col-sm-9">
+                            <button type="button" class="btn btn-info btn-block" onclick="modify_customerinfo()">提交更改</button>
+                        </div>
+                    </div>
+                </form>
+
+                <h3>购物车</h3>
+                <br/>
+                <div id="cartTable" class="table table-hover"></div>
+                <br/>
+                <!--总价和提交框-->
+                <form>
+                    <div class="input-group">
+                        <span class="input-group-addon">总计 ￥</span>
+                        <input type="text" class="form-control bg-light" value="0" id="tot_price" disabled>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" onclick="submit_order()">提交订单!</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 商家中心 -->
+            <div id="seller-center" class="container tab-pane">
+                <h3>商家资料</h3>
+                <form class="mt-4 mb-5" style="max-width: 400px;">
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">用户名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="seller_user_name" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">用户编号</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="seller_user_id" disabled value="A1001">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">联系电话</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="seller_user_tel" value="15366031066">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label">地址</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="seller_user_add">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label" style="padding-right: 0">订单总收入</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <span class="input-group-addon">￥</span>
+                                <input type="text" class="form-control" id="seller_user_total" disabled value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label"></label>
+                        <div class="col-sm-9">
+                            <button type="button" class="btn btn-info btn-block" onclick="modify_sellerinfo()">提交更改</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 系统管理 -->
+            <div id="admin-center" class="container tab-pane">
+                <script>
+
+                    function show_user_manage()
+                    {
+                        $('#seller_manage').hide();
+                        $('#user_manage').show();
+                    }
+
+                    function show_seller_manage()
+                    {
+                        $('#user_manage').hide();
+                        $('#seller_manage').show();
+                    }
+                </script>
+
+                <!-- Nav tabs -->
+                 <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#user_manage">用户列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#seller_manage">商家列表</a>
+                    </li>
+                </ul>
+
+                <div id="user_manage">
+                    <br>
+                    <h3>用户列表</h3>
+                    <div id="userTable" class="table table-hover" />
+                </div>
+                <div id="seller_manage">
+                    <br>
+                    <h3>商家列表</h3>
+                    <div id="sellerTable" class="table table-hover" />
+                </div> 
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+
+<h3>发布的商品</h3>
+<br/>
+<table class="table table-hover table-sm" style="margin: 0">
+    <thead class="thead-default">
+        <tr>
+            <th>ID</th>
+            <th>名称</th>
+            <th>总价(¥)</th>
+            <th>数量</th>
+        </tr>
+    </thead>
+    <tbody id="seller_table">
+
+    </tbody>
+</table>
+<br/>
+<!--总价和提交框-->
+<form>
+    <div class="input-group">
+        <span class="input-group-addon">总计 ￥</span>
+        <input type="text" class="form-control bg-light" value="0" id="seller_price" disabled>
+        <span class="input-group-btn">
+            <button class="btn btn-primary" type="button" onclick="submit_order()">提交订单!</button>
+        </span>
+    </div>
+</form>
