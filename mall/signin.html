@@ -4,49 +4,53 @@
 <head>
   <title>403商城 - 用户登录</title>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Bootstrap and jQuery -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/index.css">
   <script src="js/jquery.min.js"></script>
   <script src="js/popper.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/js.cookie.min.js"></script>
 
   <link rel="stylesheet" href="css/signin.css">
-  <script src="js/globalstyle.js"></script>
+  <script src="js/global_style.js"></script>
   <script src="js/global_api.js"></script>
- 
-  <script type="text/javascript">
-  $(document).ready(function (){
-    $("#sign_form").submit(function (event){
-      event.preventDefault();
-      signin();
-     });
-  });
-     
 
+  <script type="text/javascript">
+    $(document).ready(function ()
+    {
+      $("#sign_form").submit(function (event)
+      {
+        event.preventDefault();
+        signin();
+      });
+    });
 
     function signin() //登录
     {
       name = $("#input_user").val(); //取得用户名、密码
       pwd = $("#input_password").val();
-      data={
-          username: name,
-          password: pwd
-        };
+      data = {
+        username: name,
+        password: pwd
+      };
       $.post(API_SIGNIN,  //发起post请求
-      JSON.stringify(data),
-        function (data, status) { //post请求回调
+        JSON.stringify(data),
+        function (data, status)
+        { //post请求回调
           result = JSON.parse(data);  //解析json
-          if (result.type == "success") {  //登录成功
+          if (result.type == "success")
+          {  //登录成功
             create_alertbox("登录成功!", "alert-success");
             //把用户登录信息存cookie
             //TODO：登录验证的安全性
+            console.log("username=" + name);
+            console.log("userid=" + result.id);
             Cookies.set("username", name, { expires: 1 });
             Cookies.set("userid", result.id, { expires: 1 });
-            if (result.genre=="C") Cookies.set("usertype","customer",{ expires: 1 });
-            if (result.genre=="B") Cookies.set("usertype","seller",{ expires: 1 });
+            if (result.genre == "C") Cookies.set("usertype", "customer", { expires: 1 });
+            if (result.genre == "B") Cookies.set("usertype", "seller", { expires: 1 });
             window.location.assign("index.html");//跳转到首页
           }
           else  //登录失败

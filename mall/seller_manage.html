@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>系统管理 - 商户管理</title>
+    <meta charset="utf-8">
+    <!-- Bootstrap and jQuery -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/js.cookie.min.js"></script>
+
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/global_style.js"></script>
+    <script src="js/global_api.js"></script>
+    <script src="js/global_action.js"></script>
+    <script src="js/raydreams.js"></script>
+
+    <script>
+
+        $(function ()
+        {
+            loadNavigateBar("nav_admin");
+        });
+        //加载用户管理
+        $(LoadSellerProfile);
+
+        function LoadSellerProfile()
+        {
+            $.getJSON(API_GET_SELLERLIST, function (data, status)
+            {
+                sellers = [];
+                for (var a of data) sellers[a.id] = a;
+                $("#sellerTable").raytable({
+                    datasource: { data: sellers, keyfield: 'id' },
+                    columns: [
+                        { field: "id", title: "ID" },
+                        { field: "name", title: "名称" },
+                        { field: "phone", title: "联系电话" },
+                        { field: "income", title: "总收入" },
+                        {
+                            title: "操作", button: [
+                                { title: "修改", class: 'btn btn-sm btn-info mr-1', handler: UpdateUserInfo },
+                                { title: "删除", class: "btn btn-sm btn-danger mr-1", handler: DeleteUser }
+                            ]
+                        },
+                    ],
+                });
+            });
+        }
+
+        //修改用户信息
+        function UpdateUserInfo(event)
+        {
+            var id = event.data.key;
+            $("#user_id").val(sellers[id].id);
+            $("#user_name").val(sellers[id].name);
+            $("#user_tel").val(sellers[id].phone);
+            $("#myModal").modal("show");
+        }
+
+        //修改用户信息，提交
+        function Submit() 
+        {
+            //{'id': 1, 'name': '铮哥牛逼', 'phone': '15646541', 'way': 'change'}
+            var data = {
+                "id": $("#user_id").val(),
+                "name": $("#user_name").val(),
+                "phone": $("#user_tel").val(),
+                "way": "change"
+            }
+            $.post(API_UPDATA_SELLER_PROFILE, JSON.stringify(data), function ()
+            {
+                alert("修改成功！");
+                $("#myModal").modal("hide");
+                LoadSellerProfile();
+            });
+        }
+
+        //删除用户
+        function DeleteUser(event)
+        {
+            var conf = confirm('您确定要删除用户[' + sellers[event.data.key].name + ']吗？');
+            if (!conf) return;
+            var data = {
+                "id": event.data.key,
+                "way": "delete"
+            }
+            $.post(API_UPDATA_SELLER_PROFILE, JSON.stringify(data), function ()
+            {
+                alert("用户已删除！");
+                $("#myModal").modal("hide");
+                LoadSellerProfile();
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <!-- 水平导航栏 固定 -->
+        <div id="navigate_bar"></div>
+
+        <h3>商户列表</h3>
+        <div id="sellerTable" class="table table-hover"></div>
+
+        <!-- 模态框 -->
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+
+                    <!-- 模态框头部 -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">修改用户资料</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- 模态框主体 -->
+                    <div class="modal-body">
+                        <form class="mt-4 mb-5">
+                            <div class="form-group row">
+                                <label class="col-sm-3 form-control-label">用户编号</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="user_id" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 form-control-label">用户名</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="user_name">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 form-control-label">联系电话</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="user_tel">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-3 form-control-label">地址</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="user_addr">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 模态框底部 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="Submit()">提交</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

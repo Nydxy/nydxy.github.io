@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>用户中心</title>
+    <meta charset="utf-8">
+    <!-- Bootstrap and jQuery -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/js.cookie.min.js"></script>
+
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/global_style.js"></script>
+    <script src="js/global_api.js"></script>
+    <script src="js/global_action.js"></script>
+    <script src="js/raydreams.js"></script>
+
+    <script>
+        $(function () 
+        {
+            loadNavigateBar("nav_customer");
+            ShowUserInfo();
+        });
+
+        function ShowUserInfo() 
+        {
+            $.getJSON(API_GET_USERLIST, function (data,status)
+            {
+                
+                for (a of data)
+                {
+                    if (a.id == userid)
+                    {
+                        $("#user_name").val(a.name);
+                        $("#user_id").val(a.id);
+                        $("#user_tel").val(a.phone);
+                        $("#user_addr").val(a.adress);
+                        $("#user_total").val(a.total_consumption);
+                    }
+                }
+            });
+        }
+
+        //修改用户信息
+        function UpdateUserInfo()
+        {
+            var data = {
+                "id": $("#user_id").val(),
+                "name": $("#user_name").val(),
+                "phone": $("#user_tel").val(),
+                "adress": $("#user_addr").val(),
+                "way": "change"
+            }
+            $.post(API_UPDATA_CUSTOMER_PROFILE, JSON.stringify(data), function ()
+            {
+                alert("修改成功！");
+                ShowUserInfo();
+            });
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <!-- 水平导航栏 固定 -->
+        <div id="navigate_bar"></div>
+
+        <h3>客户资料</h3>
+        <form class="mt-4 mb-5" style="max-width: 400px;">
+            <div class="form-group row">
+                <label class="col-sm-3 form-control-label">用户编号</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="user_id" disabled>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 form-control-label">用户名</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="user_name" disabled>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 form-control-label">联系电话</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="user_tel">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 form-control-label">地址</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="user_addr">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 form-control-label">消费总额</label>
+                <div class="col-sm-9">
+                    <div class="input-group">
+                        <span class="input-group-addon">￥</span>
+                        <input type="text" class="form-control" id="user_total" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 form-control-label"></label>
+                <div class="col-sm-9">
+                    <button type="button" class="btn btn-info btn-block" onclick="modify_customerinfo()">提交更改</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
