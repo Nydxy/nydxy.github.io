@@ -12,7 +12,6 @@
     <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="css/index.css">
     <script src="js/global_style.js"></script>
     <script src="js/global_api.js"></script>
     <script src="js/global_action.js"></script>
@@ -22,7 +21,96 @@
         $(function ()
         {
             loadNavigateBar("nav_seller");
+            ShowUserInfo();
+            GetItemsList();
         });
+
+        //加载商户资料
+        function ShowUserInfo() 
+        {
+            $.getJSON(API_GET_SELLERLIST, function (data)
+            {
+                for (a of data)
+                {
+                    if (a.id == userid)
+                    {
+                        $("#user_name").val(a.name);
+                        $("#user_id").text(a.id);
+                        $("#user_tel").val(a.phone);
+                        $("#user_total").text(a.income);
+                    }
+                }
+            });
+        }
+
+        //修改用户信息
+        function UpdateUserInfo()
+        {
+            var data = {
+                "id": $("#user_id").text(),
+                "name": $("#user_name").val(),
+                "phone": $("#user_tel").val(),
+                "way": "change"
+            }
+            $.post(API_UPDATE_SELLER_PROFILE, JSON.stringify(data), function ()
+            {
+                alert("修改成功！");
+                ShowUserInfo();
+            });
+        }
+
+        //发布商品
+        function AddProduct()
+        {
+            var pname = $("#product_name").val();
+            var pprice = parseFloat($("#product_price").val());
+            if (pname == "" || pprice == "")
+            {
+                create_alertbox_new("商品名或价格不能为空！", "警告", "text-danger");
+                return;
+            }
+            //{'id': 6, 'name': '铮哥牛逼药剂', 'price': 2222, 'way': 'insert', 'mer_id': 1}
+            var data = {
+                id: 1,
+                name: pname,
+                price: pprice,
+                mer_id: userid,
+                way: "insert"
+            }
+            $.post(API_UPDATE_SELLER_PRODUCTS, JSON.stringify(data), function ()
+            {
+                create_alertbox_new("商品发布成功！");
+            });
+        }
+
+        //显示我的商品列表
+        function GetItemsList() 
+        {
+            $.getJSON(API_GETITEMS, function (data)
+            {
+                items = []; //商品列表
+                for (var item of data) 
+                {
+                    if (item.mer_id == userid) items[item.id] = item;
+                }
+                itemTable = $("#itemTable").raytable({
+                    datasource: { data: items, keyfield: 'id' },
+                    tableclass: "table table-hover table-sm table-responsive-sm",
+                    columns: [
+                        { field: "id", title: "ID" },
+                        { field: "name", title: "名称" },
+                        { field: "price", title: "价格" },
+                        {
+                            title: "操作", button: [
+                                { title: "修改", class: 'btn btn-sm btn-info mr-1', handler: function () { alert('暂不支持！'); }},
+                                { title: "删除", class: 'btn btn-sm btn-info mr-1', handler: function () { alert('暂不支持！'); }},
+                            ]
+                        }
+                    ],
+                });
+            }
+            );
+        }
 
     </script>
 </head>
@@ -30,52 +118,92 @@
 <body>
     <div class="container" id="container">
         <!-- 水平导航栏 固定 -->
-        <div id="navigate_bar"></div>
+        <div id="navigate_bar" class="container" style="padding-top: 70px"></div>
 
-        <h3>商家资料</h3>
-        <form class="mt-4 mb-5" style="max-width: 400px;">
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">用户名</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="seller_user_name" disabled>
-                </div>
+        <!-- 垂直导航栏 -->
+        <div class="row">
+            <div class="nav flex-column nav-pills col-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home"
+                    aria-selected="true">商户资料</a>
+                <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile"
+                    aria-selected="false">商品管理</a>
             </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">用户编号</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="seller_user_id" disabled value="A1001">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">联系电话</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="seller_user_tel" value="15366031066">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">地址</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="seller_user_add">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label" style="padding-right: 0">订单总收入</label>
-                <div class="col-sm-9">
-                    <div class="input-group">
-                        <span class="input-group-addon">￥</span>
-                        <input type="text" class="form-control" id="seller_user_total" disabled value="0">
+            <div class="tab-content col-10" id="v-pills-tabContent">
+                <!-- 个人资料 -->
+                <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                    <div class="card mb-3" style="max-width: 30rem;">
+                        <div class="card-header">
+                            <h4>商户资料</h4>
+                        </div>
+                        <div class="card-body">
+                            <form class="form">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">商户编号</label>
+                                    <div class="col-sm-9">
+                                        <span id="user_id"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">用户名</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="user_name">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">联系电话</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="user_tel" placeholder="Tel">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label" style="padding-right: 0">订单总收入</label>
+                                    <div class="input-group col-sm-9">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">￥</span>
+                                        </div>
+                                        <input type="text" class="form-control" id="seller_user_total" readonly value="0">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer" style="padding: 0.5rem">
+                            <button type="button" class="btn btn-info float-right" onclick="UpdateUserInfo()">提交更改</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label"></label>
-                <div class="col-sm-9">
-                    <button type="button" class="btn btn-info btn-block" onclick="modify_sellerinfo()">提交更改</button>
+
+                <!-- 商品管理 -->
+                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <div class="card mb-3" style="max-width: 30rem;">
+                        <div class="card-header">
+                            <h4>发布商品</h4>
+                        </div>
+                        <div class="card-body">
+                            <form class="form">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">商品名称</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="product_name">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">商品价格</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" class="form-control" id="product_price" min="0">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer" style="padding: 0.5rem">
+                            <button type="button" class="btn btn-info float-right" onclick="AddProduct()">提交</button>
+                        </div>
+                    </div>
+
+                    <h4>我的商品</h4>
+                    <div id="itemTable"></div>
                 </div>
             </div>
-        </form>
-
-        <div id="sellerTable" class="table table-hover"></div>
+        </div>
 
     </div>
 </body>

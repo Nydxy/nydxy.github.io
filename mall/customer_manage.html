@@ -12,7 +12,6 @@
     <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="css/index.css">
     <script src="js/global_style.js"></script>
     <script src="js/global_api.js"></script>
     <script src="js/global_action.js"></script>
@@ -29,28 +28,35 @@
 
         function LoadCustomerProfile()
         {
-            $.getJSON(API_GET_USERLIST, function (data, status)
+            $.getJSON(API_GET_USERLIST, function (data)
             {
-                customers = [];  //客户列表
-                for (var a in data) customers[data[a]["id"]] = data[a];
-                $("#userTable").raytable({
-                    datasource: { data: customers, keyfield: "id" },
-                    columns: [
-                        { field: "id", title: "ID" },
-                        { field: "name", title: "名称" },
-                        { field: "phone", title: "联系电话" },
-                        { field: "adress", title: "地址" },
-                        { field: "total_consumption", title: "消费总额" },
-                        {
-                            title: "操作", button: [
-                                { title: "修改", class: "btn btn-sm btn-info mr-1", handler: UpdateUserInfo },
-                                { title: "删除", class: "btn btn-sm btn-danger mr-1", handler: DeleteUser }
-                            ]
-                        },
-                    ],
-                });
+                //$.getJSON(API_GET_USERPASSWORD, function (data2)
+                //{
+                    customers = [];  //客户列表
+                    for (var a in data) customers[data[a]["id"]] = data[a];
+                    //for (var a of data2) customers[data[a].id].password = a.password;
+                    $("#userTable").raytable({
+                        datasource: { data: customers, keyfield: "id" },
+                        tableclass:"table table-hover table-sm table-responsive-sm",
+                        columns: [
+                            { field: "id", title: "ID" },
+                            { field: "name", title: "名称" },
+                            { field: "phone", title: "联系电话" },
+                            { field: "adress", title: "地址" },
+                            { field: "total_consumption", title: "消费总额" },
+                            //{ field: "password", title: "密码" },
+                            {
+                                title: "操作", button: [
+                                    { title: "修改", class: "btn btn-sm btn-info mr-1", handler: UpdateUserInfo },
+                                    { title: "删除", class: "btn btn-sm btn-danger mr-1", handler: DeleteUser }
+                                ]
+                            },
+                        ],
+                    });
+                //});
             });
         }
+
 
         //修改用户信息
         function UpdateUserInfo(event)
@@ -74,7 +80,7 @@
                 "adress": $("#user_addr").val(),
                 "way": "change"
             }
-            $.post(API_UPDATA_CUSTOMER_PROFILE, JSON.stringify(data), function ()
+            $.post(API_UPDATE_CUSTOMER_PROFILE, JSON.stringify(data), function ()
             {
                 alert("修改成功！");
                 $("#myModal").modal("hide");
@@ -91,7 +97,7 @@
                 "id": event.data.key,
                 "way": "delete"
             }
-            $.post(API_UPDATA_CUSTOMER_PROFILE, JSON.stringify(data), function ()
+            $.post(API_UPDATE_CUSTOMER_PROFILE, JSON.stringify(data), function ()
             {
                 alert("用户已删除！");
                 $("#myModal").modal("hide");
@@ -104,10 +110,10 @@
 <body>
     <div class="container" id="container">
         <!-- 水平导航栏 固定 -->
-        <div id="navigate_bar"></div>
+        <div id="navigate_bar" class="container" style="padding-top: 70px"></div>
 
-        <h3>用户列表</h3>
-        <div id="userTable" class="table table-hover"></div>
+        <h4>用户列表</h4>
+        <div id="userTable"></div>
 
         <!-- 模态框 -->
         <div class="modal fade" id="myModal">

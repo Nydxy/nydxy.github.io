@@ -2,7 +2,6 @@ cart = [];  //购物车
 
 $(document).ready(function ()
 {
-    loadNavigateBar("nav_home");
     GetItemsList();
 });
 
@@ -33,6 +32,7 @@ function RenderTable(itemList)
 {
     itemTable = $("#itemTable").raytable({
         datasource: { data: itemList, keyfield: 'id' },
+        tableclass:"table table-hover table-responsive-sm",
         columns: [
             { field: "id", title: "ID" },
             { field: "name", title: "名称" },
@@ -48,6 +48,7 @@ function showCart()
 {
     $("#cartTable").raytable({
         datasource: { data: cart, keyfield: 'id' },
+        tableclass:"table table-hover table-responsive-sm",
         columns: [
             { field: "id", title: "ID" },
             { field: "name", title: "名称" },
@@ -69,9 +70,14 @@ function showCart()
 //addCart按钮点击事件
 function addCartClick(event)
 {
-    if (!signin)
+    if (userid==null)
     {
-        create_alertbox("<a href='signin.html'>请先登录！</a>", "alert-warning");
+        create_alertbox_new("<a href='signin.html'>请先登录！</a>","Warning",'text-danger');
+        return;
+    }
+    if (usertype!="customer")
+    {
+        create_alertbox_new("对不起，您不是客户，不能购买商品！","Warning",'text-danger');
         return;
     }
     addCart(event.data.key);
@@ -120,25 +126,37 @@ function calculate_totPrice()
     $("#tot_price").val(total);
 }
 
+//下单
 function SubmitOrder()
 {
-    if (cart.count == 0) 
+    if (usertype!="customer")
     {
-        alert("购物车为空！");
+        create_alertbox_new('对不起，您不是客户，不能购买商品！','Warning','text-danger');
         return;
     }
-    var arr = [];
+    if (cart.length == 0) 
+    {
+        create_alertbox_new("购物车为空！",'Warning','text-danger');
+        return;
+    }
     var amount=0;
+    var method=$("#select_payment option:selected").val();
+    var str="{";
     for (var item in cart)
     {
-        arr.push({ id: cart[item].id, num: cart[item].num, method: "Alipay" });
+        if (amount>0) str+=",";
+        str+='"'+cart[item].id+'":'+JSON.stringify({num: cart[item].num, method:method});
         amount++;
     }
-    data = {
-        cli_id: userid,
-        item: arr,
-        amount: amount
-    };
-    alert(JSON.stringify(data));
+    str+="}";
+    data='{"cli_id":'+userid+',"amount":'+amount+',"item":'+str+"}";
+    console.log(data);
     
+    $.post(API_SUBMIT_ORDER,
+        data,
+        function(data){
+            create_alertbox_new("订单提交成功！","成功");
+            cart=[];
+            $("#cart").modal("hide");
+    });
 }

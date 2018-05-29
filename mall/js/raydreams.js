@@ -17,6 +17,7 @@
 		data: loadData, // function reference to set the data
 		currentSelection: null, // last clicked row
 		onRowClick: null, // external handler when a row is clicked
+		tableclass:null
 	};
 
 	// iterates the data and fills in the table body
@@ -33,7 +34,8 @@
 			var row = jQuery('<tr></tr>');// start a new row
 			row.data('rowindex', record);
 			var object=data[record]; //当前对象
-			if (keyField != null) row.data('key', object[keyField]);
+			if (keyField != null) row.data('key', object[keyField]);  //指定每一行的key
+			else row.data('key',record);  //如果未指定，使用该数组/字典的索引作为key
 			//在此处显示每一列的数据
 			for (var col of base.columns)
 			{
@@ -114,7 +116,7 @@
 		// get the input options
 		base.datasource.data = options.datasource.data;
 		base.datasource.keyfield = options.datasource.keyfield;
-
+		base.tableclass=options.tableclass==null?"table":options.tableclass;
 		base.onRowClick = options.rowClickHandler;
 
 		// set the headers
@@ -151,7 +153,8 @@
 	{
 
 		// skeleton of the table
-		var skel = jQuery('<table class="table table-hover" style="margin-bottom:0px;"><thead><tr></tr></thead><tbody></tbody></table>');
+		var skel = jQuery('<table style="margin-bottom:0"><thead><tr></tr></thead><tbody></tbody></table>');
+		skel.addClass(base.tableclass);
 
 		// add each header
 		jQuery.each(base.columns, function (idx, h)
@@ -161,14 +164,6 @@
 
 			if (h.width != undefined)
 				cell.css('width', h.width + 'px');
-
-			if (h.sort)
-			{
-				var sortBtn = jQuery("<span class='glyphicon glyphicon-sort-by-attributes' style='color:LightGray' aria-hidden='true' />");
-				cell.append('&nbsp;');
-				cell.append(sortBtn);
-				sortBtn.on('click', null, h.field, doSortCol);
-			}
 
 			skel.find('tr').append(cell);
 		});

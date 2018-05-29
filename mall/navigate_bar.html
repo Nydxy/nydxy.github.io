@@ -1,30 +1,69 @@
 <!DOCTYPE html>
-<ul class="nav nav-tabs fixed-top navbar-light bg-light">
-        <!-- LOGO -->
-        <img class="navbar-brand ml-2 mr-1" src="images/logo2.png" alt="Logo" style="height:40px;width:47px">
-        <a class="navbar-brand font-weight-bold " href="#">403商城</a>
-        <!-- 首页 -->
-        <li class="nav-item">
-            <a id="nav_home" class="nav-link" href="index.html">首页</a>
-        </li>
-        <li class="nav-item" id="link-customer-center">
-            <a id="nav_customer" class="nav-link" href="customer_center.html">客户中心</a>
-        </li>
-        <li class="nav-item" id="link-seller-center">
-            <a id="nav_seller" class="nav-link" href="seller_center.html">商家中心</a>
-        </li>
-        <li class="nav-item dropdown">
-            <a id="nav_admin" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">系统管理</a>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="customer_manage.html">客户管理</a>
-                <a class="dropdown-item" href="seller_manage.html">商户管理</a>
-            </div>
-        </li>
+<nav class="navbar navbar-expand-md fixed-top navbar-light bg-light" style="padding-top: 0;padding-bottom: 0">
+    <!-- LOGO -->
+    <a class="navbar-brand font-weight-bold " href="#" style="padding: 0">
+        <img class="navbar-brand ml-2 mr-1" src="images/logo2.png" alt="Logo" height="40px">403商城
+    </a>
+    <!-- Collapse -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" id="nav_home">
+                <a class="nav-link" href="index.html">首页</a>
+            </li>
+            <li class="nav-item" id="nav_customer">
+                <a class="nav-link" href="customer_center.html">客户中心</a>
+            </li>
+            <li class="nav-item" id="nav_seller">
+                <a class="nav-link" href="seller_center.html">商家中心</a>
+            </li>
+            <li class="nav-item dropdown" id="nav_admin">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" aria-expanded="false">系统管理</a>
+                <div class="dropdown-menu" aria-labelledby="nav_admin">
+                    <a class="dropdown-item" href="customer_manage.html">客户管理</a>
+                    <a class="dropdown-item" href="seller_manage.html">商户管理</a>
+                </div>
+            </li>
+        </ul>
+        <!-- 登录标志 -->
         <div class="navbar-text" id="usrinfo">
-            <h5>
-                <a href="signin.html">
-                    <span class="badge badge-secondary">请登录</span>
-                </a>
-            </h5>
+            <a href="signin.html">
+                <span class="badge badge-secondary">
+                    <big>请登录</big>
+                </span>
+            </a>
         </div>
-</ul>
+    </div>
+</nav>
+<script>
+    usertype = Cookies.get("usertype");
+    username = Cookies.get("username");
+    userid = parseInt(Cookies.get("userid"));
+    console.log("username=" + username);
+    console.log("userid=" + userid);
+    console.log("usertype=" + usertype);
+    switch (usertype)
+    {
+        case "customer":
+            $("#nav_seller").hide();
+            $("#nav_admin").hide();
+            break;
+        case "seller":
+            $("#nav_customer").hide();
+            $("#nav_admin").hide();
+            break;
+        case "admin":
+            $("#nav_customer").hide();
+            $("#nav_seller").hide();
+            break;
+        default:
+            // $("#nav_customer").hide();
+            // $("#nav_seller").hide();
+            // $("#nav_admin").hide();
+            break;
+    }
+</script>

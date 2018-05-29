@@ -54,11 +54,12 @@
           var result = JSON.parse(data);
           if (result.type == "success")
           {
-            create_alertbox('注册成功,请<a href="signin.html">登录</a>', "alert-success");
+            create_alertbox_new('注册成功,请<a href="signin.html">登录</a>');
+            //create_alertbox('注册成功,请<a href="signin.html">登录</a>', "alert-success");
           }
           else
           {
-            create_alertbox("注册失败：该用户名已存在", "alert-warning");
+            create_alertbox_new("注册失败：该用户名已存在");
           }
         }
 
@@ -83,10 +84,14 @@
       <input type="text" class="mb-2 form-control" id="input_name" placeholder="昵称*" required>
       <input type="tel" class="mb-2 form-control" id="input_phone" placeholder="手机号*" required>
       <input type="text" class="mb-2 form-control" id="input_addr" placeholder="地址">
-      <select class="form-control" id="input_gener">
+      <select class="form-control mb-2" id="input_gener">
         <option>用户</option>
         <option>商家</option>
       </select>
+      <div class="custom-control custom-checkbox text-left">
+          <input type="checkbox" class="custom-control-input" id="exampleCheck1" required>
+          <label class="custom-control-label" for="exampleCheck1">我已阅读并同意<a href="javascript:void(0)" onclick="alert('这大概是互联网史上最大的骗局吧')">用户协议</a></label>
+        </div>
       <button type="submit" class="mt-4 btn btn-primary btn-block" id="btn_signup">提交</button>
     </form>
 

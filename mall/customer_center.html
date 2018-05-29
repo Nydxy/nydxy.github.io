@@ -12,7 +12,6 @@
     <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="css/index.css">
     <script src="js/global_style.js"></script>
     <script src="js/global_api.js"></script>
     <script src="js/global_action.js"></script>
@@ -23,22 +22,23 @@
         {
             loadNavigateBar("nav_customer");
             ShowUserInfo();
+            LoadUserOrders();
         });
 
         function ShowUserInfo() 
         {
-            $.getJSON(API_GET_USERLIST, function (data,status)
+            $.getJSON(API_GET_USERLIST, function (data)
             {
-                
                 for (a of data)
                 {
                     if (a.id == userid)
                     {
                         $("#user_name").val(a.name);
-                        $("#user_id").val(a.id);
+                        $("#user_id").text(a.id);
                         $("#user_tel").val(a.phone);
                         $("#user_addr").val(a.adress);
-                        $("#user_total").val(a.total_consumption);
+                        $("#user_total").text(a.total_consumption);
+                        console.log(a);
                     }
                 }
             });
@@ -54,64 +54,136 @@
                 "adress": $("#user_addr").val(),
                 "way": "change"
             }
-            $.post(API_UPDATA_CUSTOMER_PROFILE, JSON.stringify(data), function ()
+            $.post(API_UPDATE_CUSTOMER_PROFILE, JSON.stringify(data), function ()
             {
                 alert("修改成功！");
                 ShowUserInfo();
             });
         }
 
+        //加载个人订单
+        function LoadUserOrders()
+        {
+            $.getJSON(API_GET_ALL_ORDERS, function (data)
+            {
+                orderList = [];
+                console.log("orders:");
+                console.log(data);
+                //找到所有的订单
+                for (var a in data)
+                {
+                    if (data[a].cli_name == username) 
+                    {
+                        orderList[data[a].id] = data[a];
+                        $("#myOrders").append(CreateOrderCard(data[a].id,data[a]));
+                    }
+                }
+            });
+        }
 
+        function CreateOrderCard(ordername,order)
+        {
+            var card=$('<div class="card mb-3"></div>');
+            var header=$('<div class="card-header" style="padding:0.5rem"></div>');
+            header.append(`<span class="mr-3">订单号:${ordername}</span><span class="mr-3">${order.time}</span>`);
+            card.append(header);
+            var body=$('<div class="card-body" style="padding: 0"></div>');
+            body.raytable({
+                datasource: { data: order.goods,keyfield:""},
+                        tableclass:"table table-sm",
+                        columns: [
+                            { field: "goods_name", title: "商品名" },
+                            { field: "price", title: "单价" },
+                            { field: "num", title: "数量" },
+                            {title:"操作",button:[{ title: "退货", class:'btn btn-sm btn-info', handler: ReturnGoods },]}
+                        ],
+            });
+            card.append(body);
+            var footer=$(`<div class="card-footer" style="padding: 0.2rem"><span class=" float-right">￥${order.payment}</span></div>`);
+            //var btn=$('<button type="button" class="btn btn-info btn-sm float-right">退货</button>');
+            //btn.on('click',null,ordername,ReturnGoods);
+            //footer.append(btn);
+            card.append(footer);
+            return card;
+        }
+
+        function ReturnGoods(event)
+        {
+            ordername=event.data;
+            //{'ind_id': 1, 'goods_id': 2}
+            //var data={ind_id:ordername,goods_id:}
+            alert("暂未开放！");
+        }
     </script>
 </head>
 
 <body>
     <div class="container" id="container">
         <!-- 水平导航栏 固定 -->
-        <div id="navigate_bar"></div>
+        <div id="navigate_bar" class="container" style="padding-top: 70px"></div>
 
-        <h3>客户资料</h3>
-        <form class="mt-4 mb-5" style="max-width: 400px;">
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">用户编号</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="user_id" disabled>
-                </div>
+        <div class="row">
+            <div class="nav flex-column nav-pills col-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home"
+                    aria-selected="true">用户资料</a>
+                <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#myOrders" role="tab" aria-controls="v-pills-profile"
+                    aria-selected="false">我的订单</a>
             </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">用户名</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="user_name" disabled>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">联系电话</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="user_tel">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">地址</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="user_addr">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label">消费总额</label>
-                <div class="col-sm-9">
-                    <div class="input-group">
-                        <span class="input-group-addon">￥</span>
-                        <input type="text" class="form-control" id="user_total" disabled>
+            <div class="tab-content col-10" id="v-pills-tabContent">
+                <!-- 用户资料 -->
+                <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                    <div class="card mb-3" style="max-width: 30rem;">
+                        <div class="card-header">
+                            <h4>用户资料</h4>
+                        </div>
+                        <div class="card-body">
+                            <form class="form">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">用户编号</label>
+                                    <div class="col-sm-9">
+                                        <span id="user_id"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">用户名</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="user_name" placeholder="Shit">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">联系电话</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="user_tel" placeholder="Tel">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">地址</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="user_addr" placeholder="Address">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                        <label class="col-sm-3 form-control-label" style="padding-right: 0">消费总额</label>
+                                        <div class="input-group col-sm-9">
+                                            <span>￥</span>
+                                            <span id="user_total">0</span>
+                                        </div>
+                                    </div>
+                            </form>
+                        </div>
+                        <div class="card-footer" style="padding: 0.5rem">
+                            <button type="button" class="btn btn-info float-right" onclick="modify_sellerinfo()">提交更改</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-3 form-control-label"></label>
-                <div class="col-sm-9">
-                    <button type="button" class="btn btn-info btn-block" onclick="modify_customerinfo()">提交更改</button>
+
+                <!-- 我的订单 -->
+                <div class="tab-pane fade" id="myOrders" role="tabpanel">
+
                 </div>
             </div>
-        </form>
+        </div>
+
     </div>
 </body>
 
