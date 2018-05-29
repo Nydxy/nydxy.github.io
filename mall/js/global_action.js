@@ -9,6 +9,12 @@ function signout()
 //加载导航栏
 function loadNavigateBar(setactive)
 {
+    usertype = Cookies.get("usertype");
+    username = Cookies.get("username");
+    userid = parseInt(Cookies.get("userid"));
+    console.log("username=" + username);
+    console.log("userid=" + userid);
+    console.log("usertype=" + usertype);
     $("#navigate_bar").load("navigate_bar.html", function ()
     {
         if (setactive != null) $("#" + setactive).addClass("active font-weight-bold");
