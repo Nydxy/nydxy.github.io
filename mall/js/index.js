@@ -48,12 +48,10 @@ function showCart()
 {
     $("#cartTable").raytable({
         datasource: { data: cart, keyfield: 'id' },
-        tableclass:"table table-hover table-responsive-sm",
+        tableclass:"table table-hover table-responsive-sm table-sm",
         columns: [
-            { field: "id", title: "ID" },
             { field: "name", title: "名称" },
             { field: "seller_name", title: "商家" },
-            { field: "price", title: "单价" },
             { field: "num", title: "数量" },
             { field: "total_price()", title: "总价", isFunc: true },
             {

@@ -32,7 +32,7 @@
         </h3>
         <br/>
 
-        <div id="itemTable" class="table table-hover"></div>
+        <div id="itemTable"></div>
 
         <!-- 购物车 -->
         <div class="modal fade" id="cart">
@@ -47,29 +47,35 @@
 
                     <!-- 模态框主体 -->
                     <div class="modal-body">
-                        <div id="cartTable" class="table table-hover"></div>
+                        <div id="cartTable"></div>
                         <br/>
                         <!--总价和提交框-->
                         <form class="form">
-                            <div class="input-group">
+                            <div class="input-group mb-2">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">总计</span>
                                     <span class="input-group-text bg-light">￥</span>
-                                    <input type="text" class="form-control bg-light" value="0" id="tot_price" disabled>
-                                    <span class="input-group-text">请选择支付方式</span>
                                 </div>
-                                <select class="custom-select" id="select_payment" required>
+                                <input type="text" class="form-control bg-light" value="0" id="tot_price" disabled>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">支付方式</span>
+                                </div>
+                                <select class="custom-select" id="select_payment">
                                     <option value="Alipay" selected>支付宝</option>
                                     <option value="WeChat Pay">微信支付</option>
+                                    <option value="QQ Wallet">QQ钱包</option>
                                     <option value="Credit Card">信用卡</option>
                                 </select>
+
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" onclick="SubmitOrder()">提交订单!</button>
+                                    <button class="btn btn-primary" type="button" onclick="SubmitOrder()">提交订单</button>
                                 </div>
                             </div>
                         </form>
-                        <div class="text-center mt-4"><img src="images/payment.jpg" class="img-fluid" style="width: 75%"></div>
-                        
+                        <!-- <div class="text-center mt-4"><img src="images/payment.jpg" class="img-fluid" style="width: 75%"></div> -->
+
                     </div>
 
                 </div>
