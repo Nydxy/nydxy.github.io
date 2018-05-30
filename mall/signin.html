@@ -53,7 +53,7 @@
 
             if (result.genre == "C") Cookies.set("usertype", "customer", { expires: 1 });
             if (result.genre == "B") Cookies.set("usertype", "seller", { expires: 1 });
-            if (username == "admin") Cookies.set("usertype", "admin", { expires: 1 });
+            if (name == "admin") Cookies.set("usertype", "admin", { expires: 1 });
             setTimeout(function () { window.location.assign("index.html"); }, 1000);//跳转到首页
 
           }
