@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>用户中心</title>
+    <meta charset="utf-8">
+    <!-- Bootstrap and jQuery -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/js-cookie/latest/js.cookie.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
+    <script src="js/global_style.js"></script>
+    <script src="js/global_api.js"></script>
+    <script src="js/global_action.js"></script>
+    <script src="js/raydreams.js"></script>
+
+    <script>
+        $(function () 
+        {
+            loadNavigateBar("nav_admin");
+            LoadStatistics();
+            LoadSellerList();
+            LoadSellers();
+        });
+
+        function LoadStatistics()
+        {
+            $.getJSON(API_ANALYSE_ALL, function (data)
+            {
+                $("#mer_income").text(data.mer_income);
+                $("#cli_consumption").text(data.cli_consumption);
+                $("#ind_payment").text(data.ind_payment);
+            });
+        }
+
+        //加载商户列表
+        function LoadSellerList()
+        {
+            $.getJSON(API_GET_SELLERLIST, function (data)
+            {
+                for (a of data)
+                {
+                    $("#select_seller").append(`<option value="${a.id}">${a.name}</option>`);
+                }
+            });
+        }
+
+        //加载商品销售分析
+        function LoadSellerProfile()
+        {
+            var id = $("#select_seller option:selected").val();
+            $.post(API_ANALYSE_SELLER, JSON.stringify({ mer_id: parseInt(id) }),
+                function (result)
+                {
+                    if (result == "{}")
+                    {
+                        create_alertbox_new("该商户没有售出任何商品！", "提示");
+                        return;
+                    }
+                    result = JSON.parse(result);
+                    $("#itemTable").raytable({
+                        datasource: { data: result },
+                        tableclass: "table table-hover table-sm table-responsive-sm",
+                        columns: [
+                            { field: "goods_id", title: "商品ID" },
+                            { field: "name", title: "名称" },
+                            { field: "num", title: "销量" },
+                            { field: "total", title: "总收入" },
+                        ],
+                    });
+                });
+        }
+
+        //加载商户收入排行
+        function LoadSellers()
+        {
+            $.getJSON(API_GET_SELLERLIST, function (result)
+            {
+                result.sort(function (a, b)
+                {
+                    return (b.income - a.income);
+                });
+                $("#sellerTable").raytable({
+                    datasource: { data: result },
+                    tableclass: "table table-hover table-sm table-responsive-sm",
+                    columns: [
+                        { field: "id", title: "商户ID" },
+                        { field: "name", title: "名称" },
+                        { field: "phone", title: "联系电话" },
+                        { field: "income", title: "总收入" },
+                    ],
+                });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <!-- 水平导航栏 固定 -->
+        <div id="navigate_bar" class="container" style="padding-top: 70px"></div>
+
+        <div class="row">
+            <!-- 垂直导航栏 -->
+            <div class="nav flex-column nav-pills col-2" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" data-toggle="pill" href="#tab1" role="tab" aria-selected="true">对账</a>
+                <a class="nav-link" data-toggle="pill" href="#tab2" role="tab" aria-selected="false">商品销售分析</a>
+                <a class="nav-link" data-toggle="pill" href="#tab3" role="tab" aria-selected="false">商户收入排行</a>
+            </div>
+
+            <div class="tab-content col-10">
+                <!-- 对账 -->
+                <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+                    <div class="card mb-3" style="max-width: 30rem;">
+                        <div class="card-header">
+                            <h4>对账</h4>
+                        </div>
+                        <div class="card-body">
+                            <span>商户总收入:￥</span>
+                            <span id="mer_income">0</span>
+                            <br/>
+                            <br/>
+                            <span>用户总消费:￥</span>
+                            <span id="cli_consumption">0</span>
+                            <br/>
+                            <br/>
+                            <span>订单总金额:￥</span>
+                            <span id="ind_payment">0</span>
+                            <br/>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab2" role="tabpanel">
+                    <span>请选择商户</span>
+                    <select class="form-control-inline" id="select_seller" style="min-width: 10rem;"></select>
+                    <button class="btn btn-primary btn-sm" onclick="LoadSellerProfile()">查询</button>
+
+                    <div id="itemTable"></div>
+                </div>
+
+                <!-- 商品销售排行 -->
+                <div class="tab-pane fade" id="tab3" role="tabpanel">
+                    <div id="sellerTable"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

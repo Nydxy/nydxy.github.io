@@ -21,7 +21,7 @@ function loadNavigateBar(setactive)
         if (username != null)
         {
             signin = true;
-            $("#usrinfo").html(`<b>${username}</b> <a href="" onclick="signout()"><span class="badge badge-success"><big>退出</big></span></a>`);
+            $("#usrinfo").html(`<b>${username}</b> <a href="index.html" onclick="signout()"><span class="badge badge-success"><big>退出</big></span></a>`);
         }
     });
 }

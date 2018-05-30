@@ -28,7 +28,7 @@
 
         function LoadSellerProfile()
         {
-            $.getJSON(API_GET_SELLERLIST, function (data, status)
+            $.getJSON(API_GET_SELLERLIST, function (data)
             {
                 sellers = [];
                 for (var a of data) sellers[a.id] = a;

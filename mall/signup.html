@@ -13,10 +13,20 @@
   <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
-  <link rel="stylesheet" href="css/signin.css">
   <script src="js/global_style.js"></script>
   <script src="js/global_api.js"></script>
 
+  <style>
+    body{
+      padding-top: 5%;
+    }
+    .form-signin {
+      max-width: 18rem;
+      margin: 0 auto;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
   <script type="text/javascript">
     $(document).ready(function ()
     {
@@ -89,9 +99,11 @@
         <option>商家</option>
       </select>
       <div class="custom-control custom-checkbox text-left">
-          <input type="checkbox" class="custom-control-input" id="exampleCheck1" required>
-          <label class="custom-control-label" for="exampleCheck1">我已阅读并同意<a href="javascript:void(0)" onclick="alert('这大概是互联网史上最大的骗局吧')">用户协议</a></label>
-        </div>
+        <input type="checkbox" class="custom-control-input" id="exampleCheck1" required>
+        <label class="custom-control-label" for="exampleCheck1">我已阅读并同意
+          <a href="javascript:void(0)" onclick="alert('这大概是互联网史上最大的骗局吧')">用户协议</a>
+        </label>
+      </div>
       <button type="submit" class="mt-4 btn btn-primary btn-block" id="btn_signup">提交</button>
     </form>
 
