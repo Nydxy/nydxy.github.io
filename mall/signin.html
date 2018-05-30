@@ -35,6 +35,7 @@
         username: name,
         password: pwd
       };
+
       $.post(API_SIGNIN,  //发起post请求
         JSON.stringify(data),
         function (data, status)
@@ -49,15 +50,16 @@
             console.log("userid=" + result.id);
             Cookies.set("username", name, { expires: 1 });
             Cookies.set("userid", result.id, { expires: 1 });
-            if (result.genre == "C" && name!="admin") Cookies.set("usertype", "customer", { expires: 1 });
+
+            if (result.genre == "C") Cookies.set("usertype", "customer", { expires: 1 });
             if (result.genre == "B") Cookies.set("usertype", "seller", { expires: 1 });
-            if (name=="admin") Cookies.set("usertype", "admin", { expires: 1 });
-            setTimeout(function(){window.location.assign("index.html");},1000);//跳转到首页
-            
+            if (username == "admin") Cookies.set("usertype", "admin", { expires: 1 });
+            setTimeout(function () { window.location.assign("index.html"); }, 1000);//跳转到首页
+
           }
           else  //登录失败
           {
-            create_alertbox_new(result.type,"登陆失败",'text-danger');
+            create_alertbox_new(result.type, "登陆失败", 'text-danger');
             $("#input_password").focus();
           }
           console.log(result);

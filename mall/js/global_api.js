@@ -9,3 +9,4 @@ const API_UPDATE_SELLER_PROFILE="http://120.79.214.54/update/merchant/";
 const API_SUBMIT_ORDER="http://120.79.214.54/update/indent/";
 const API_GET_USERPASSWORD="http://120.79.214.54/show/user";
 const API_UPDATE_SELLER_PRODUCTS="http://120.79.214.54/update/goods/";
+const API_RETURN_PRODUCT="http://120.79.214.54/return/";

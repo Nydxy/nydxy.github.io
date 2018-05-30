@@ -35,9 +35,10 @@
                     if (a.id == userid)
                     {
                         $("#user_name").val(a.name);
+                        $("#user_username").text(username);
                         $("#user_id").text(a.id);
                         $("#user_tel").val(a.phone);
-                        $("#user_total").text(a.income);
+                        $("#user_total").val(a.income);
                     }
                 }
             });
@@ -46,6 +47,11 @@
         //修改用户信息
         function UpdateUserInfo()
         {
+            if (usertype!="seller")
+            {
+                create_alertbox_new("您不能修改商户资料！", "警告", "text-danger");
+                return;
+            }
             var data = {
                 "id": $("#user_id").text(),
                 "name": $("#user_name").val(),
@@ -54,13 +60,25 @@
             }
             $.post(API_UPDATE_SELLER_PROFILE, JSON.stringify(data), function ()
             {
-                alert("修改成功！");
+                create_alertbox_new("修改成功！", "成功");
                 ShowUserInfo();
             });
         }
 
         //发布商品
-        function AddProduct()
+        function AddProduct() 
+        {
+            if (usertype!="seller")
+            {
+                create_alertbox_new("您不能发布商品！", "警告", "text-danger");
+                return;
+            }
+            $("#myModal").modal('show');
+            $('#submit').off('click');
+            $('#submit').on('click', AddProductSubmit);
+        }
+        //发布商品
+        function AddProductSubmit()
         {
             var pname = $("#product_name").val();
             var pprice = parseFloat($("#product_price").val());
@@ -79,7 +97,11 @@
             }
             $.post(API_UPDATE_SELLER_PRODUCTS, JSON.stringify(data), function ()
             {
-                create_alertbox_new("商品发布成功！");
+                create_alertbox_new("商品发布成功！", "成功");
+                $("#myModal").modal('hide');
+                $("#product_name").val("");
+                $("#product_price").val("");
+                GetItemsList();
             });
         }
 
@@ -89,11 +111,21 @@
             $.getJSON(API_GETITEMS, function (data)
             {
                 items = []; //商品列表
-                for (var item of data) 
+                switch (usertype)
                 {
-                    if (item.mer_id == userid) items[item.id] = item;
+                    case "admin":
+                        for (var item of data)
+                            items[item.id] = item;
+                        break;
+                    case "seller":
+                        for (var item of data)
+                            if (item.mer_id == userid) items[item.id] = item;
+                        break;
+                    default:
+                        return;
                 }
-                itemTable = $("#itemTable").raytable({
+
+                $("#itemTable").raytable({
                     datasource: { data: items, keyfield: 'id' },
                     tableclass: "table table-hover table-sm table-responsive-sm",
                     columns: [
@@ -102,8 +134,8 @@
                         { field: "price", title: "价格" },
                         {
                             title: "操作", button: [
-                                { title: "修改", class: 'btn btn-sm btn-info mr-1', handler: function () { alert('暂不支持！'); }},
-                                { title: "删除", class: 'btn btn-sm btn-info mr-1', handler: function () { alert('暂不支持！'); }},
+                                { title: "修改", class: 'btn btn-sm btn-info mr-1', handler: UpdateProduct },
+                                { title: "删除", class: 'btn btn-sm btn-info mr-1', handler: DeleteProduct },
                             ]
                         }
                     ],
@@ -112,6 +144,56 @@
             );
         }
 
+
+        //修改商品信息
+        function UpdateProduct(event)
+        {
+            var itemid = event.data.key;
+            $("#product_name").val(items[itemid].name);
+            $("#product_price").val(items[itemid].price);
+            $("#myModal").modal('show');
+            $('#submit').off('click');
+            $('#submit').on('click', function ()
+            {
+                var pname = $("#product_name").val();
+                var pprice = parseFloat($("#product_price").val());
+                if (pname == "" || $("#product_price").val() == "")
+                {
+                    create_alertbox_new("商品名或价格不能为空！", "警告", "text-danger");
+                    return;
+                }
+                var data = {
+                    id: itemid,
+                    name: pname,
+                    price: pprice,
+                    mer_id: userid,
+                    way: "change"
+                }
+                $.post(API_UPDATE_SELLER_PRODUCTS, JSON.stringify(data), function ()
+                {
+                    create_alertbox_new("商品修改成功！", "成功");
+                    $("#myModal").modal('hide');
+                    $("#product_name").val("");
+                    $("#product_price").val("");
+                    GetItemsList();
+                });
+            });
+        }
+
+        function DeleteProduct(event)
+        {
+            var itemid = event.data.key;
+            var data = {
+                id: itemid,
+                mer_id: userid,
+                way: "delete"
+            }
+            $.post(API_UPDATE_SELLER_PRODUCTS, JSON.stringify(data), function ()
+            {
+                create_alertbox_new("商品删除成功！", "成功");
+                GetItemsList();
+            });
+        }
     </script>
 </head>
 
@@ -146,13 +228,19 @@
                                 <div class="form-group row">
                                     <label class="col-sm-3 form-control-label">用户名</label>
                                     <div class="col-sm-9">
+                                        <span id="user_username"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">昵称</label>
+                                    <div class="col-sm-9">
                                         <input type="text" class="form-control" id="user_name">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-3 form-control-label">联系电话</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="user_tel" placeholder="Tel">
+                                        <input type="text" class="form-control" id="user_tel">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -161,7 +249,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">￥</span>
                                         </div>
-                                        <input type="text" class="form-control" id="seller_user_total" readonly value="0">
+                                        <input type="text" class="form-control" id="user_total" readonly value="0">
                                     </div>
                                 </div>
                             </form>
@@ -174,33 +262,51 @@
 
                 <!-- 商品管理 -->
                 <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                    <div class="card mb-3" style="max-width: 30rem;">
-                        <div class="card-header">
-                            <h4>发布商品</h4>
-                        </div>
-                        <div class="card-body">
-                            <form class="form">
-                                <div class="form-group row">
-                                    <label class="col-sm-3 form-control-label">商品名称</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="product_name">
-                                    </div>
+
+                    <h4>我的商品
+                        <a class="btn" href="javascript:void(0)" onclick="AddProduct()">发布新的商品</a>
+                    </h4>
+
+
+                    <div id="itemTable"></div>
+                    <!-- 模态框 -->
+                    <div class="modal fade" id="myModal">
+                        <div class="modal-dialog modal-md">
+                            <div class="modal-content">
+
+                                <!-- 模态框头部 -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">发布/修改商品</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-3 form-control-label">商品价格</label>
-                                    <div class="col-sm-9">
-                                        <input type="number" class="form-control" id="product_price" min="0">
-                                    </div>
+
+                                <!-- 模态框主体 -->
+                                <div class="modal-body">
+                                    <form class="form">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 form-control-label">商品名称</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="product_name">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 form-control-label">商品价格</label>
+                                            <div class="col-sm-9">
+                                                <input type="number" class="form-control" id="product_price" min="0">
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="card-footer" style="padding: 0.5rem">
-                            <button type="button" class="btn btn-info float-right" onclick="AddProduct()">提交</button>
+
+                                <!-- 模态框底部 -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" id="submit">提交</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-
-                    <h4>我的商品</h4>
-                    <div id="itemTable"></div>
                 </div>
             </div>
         </div>
