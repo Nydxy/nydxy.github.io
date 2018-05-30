@@ -32,7 +32,7 @@ function RenderTable(itemList)
 {
     itemTable = $("#itemTable").raytable({
         datasource: { data: itemList, keyfield: 'id' },
-        tableclass:"table table-hover table-responsive-sm",
+        tableclass:"table table-hover table-responsive-sm table-sm",
         columns: [
             { field: "id", title: "ID" },
             { field: "name", title: "名称" },
