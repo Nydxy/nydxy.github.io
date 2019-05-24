@@ -25,15 +25,21 @@ function getMap(filename) {
 function initiateCanvas() {
     myCanvas = document.getElementById("myCanvas"); //canvas对象
     var container = $("#myCanvas-container");
-    var f_height = container.height();
-    var f_width = container.width();
-    canvasLength = f_height > f_width ? f_width : f_height;  //全局变量：canvas的边长
+    canvas_height = container.height();
+    canvas_width = container.width();
+    canvasLength = canvas_height > canvas_width ? canvas_width : canvas_height;  //全局变量：canvas的边长
+
 
     var ratio = window.devicePixelRatio;
-    myCanvas.style.height = canvasLength + 'px';
-    myCanvas.style.width = canvasLength + 'px';
-    myCanvas.width = canvasLength * ratio;
-    myCanvas.height = canvasLength * ratio;
+    // myCanvas.style.height = canvasLength + 'px';
+    // myCanvas.style.width = canvasLength + 'px';
+    // myCanvas.width = canvasLength * ratio;
+    // myCanvas.height = canvasLength * ratio;
+
+    myCanvas.style.height = canvas_height + 'px';
+    myCanvas.style.width = canvas_width + 'px';
+    myCanvas.width = canvas_width * ratio;
+    myCanvas.height = canvas_height * ratio;
 
     ctx = myCanvas.getContext("2d");        //全局变量：画笔对象
     ctx.scale(ratio, ratio);
@@ -47,15 +53,12 @@ function initiateCanvas() {
 //网格的坐标统一用 x:横坐标/列 y:纵坐标/行
 function drawMap(map) {
     ctx.lineWidth = 1;
-    ctx.font = "13px 微软雅黑";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
 
     map_height = map.length;        //全局变量：地图高（格）
     map_width = map[0].length;      //全局变量：地图宽（格）
     pixel_length = Math.floor(canvasLength / map_height);   //全局变量：每格的边长（像素）
 
-    ctx.clearRect(0, 0, canvasLength, canvasLength);
+    ctx.clearRect(0, 0, canvas_width, canvas_height);
 
     //画网格
     ctx.strokeStyle = "#444444";
@@ -74,13 +77,32 @@ function drawMap(map) {
     }
 
     //填充颜色和数字
+    var sum = 0;
+    var max=0;
+    var min=10000;
     for (var i = 0; i < map_height; i++) {
         for (var j = 0; j < map_width; j++) {
             var x = j * pixel_length;     //左上角的横坐标
             var y = i * pixel_length;     //左上角的纵坐标
             drawSquare(x, y, map[i][j], pixel_length);
+            sum += map[i][j];
+            if (map[i][j]>max) max=map[i][j];
+            if (map[i][j]<min) min=map[i][j];
         }
     }
+    var avg = sum / (map_height * map_width);
+
+    ctx.strokeStyle = "black";
+    var legend_width = 150;
+    var legend_height = 70;
+    var legend_x = pixel_length * map_width + 20;
+    var legend_y = pixel_length * map_width - legend_height;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.strokeRect(legend_x, legend_y, legend_width, legend_height);
+    ctx.fillText("平均灌溉需求：" + avg.toFixed(2), legend_x + 10, legend_y + 10);
+    ctx.fillText("最大灌溉需求：" + max.toFixed(2), legend_x + 10, legend_y + 30);
+    ctx.fillText("最小灌溉需求：" + min.toFixed(2), legend_x + 10, legend_y + 50);
 }
 
 //画一个小方格 x:横坐标/列 y:纵坐标/行
@@ -89,13 +111,16 @@ function drawSquare(x, y, value, length) {
     ctx.fillStyle = `rgb(255,${color},${color})`;   //填充
     ctx.fillRect(x + 1, y + 1, length - 2, length - 2);
     ctx.fillStyle = "black";                        //文字颜色
+    ctx.font = "13px 微软雅黑";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText(value, x + length / 2, y + length / 2);  //数字
 }
 
 
 //var path = [0,17,34,51,68,85,102,119,136];
-var path = [[0, 2], [0, 3], [1, 3], [1, 2], [1, 1], [1, 0], [2, 0], [2, 1], [2, 2],[2,3],
-    [2,4],[3,4],[3,3],[2,3],[2,2],[2,1],[3,1],[4,1],[4,2],[4,3],[3,3],[2,3],[2,2],[3,2]];
+var path = [[0, 2], [0, 3], [1, 3], [1, 2], [1, 1], [1, 0], [2, 0], [2, 1], [2, 2], [2, 3],
+[2, 4], [3, 4], [3, 3], [2, 3], [2, 2], [2, 1], [3, 1], [4, 1], [4, 2], [4, 3], [3, 3], [2, 3], [2, 2], [3, 2]];
 
 //网格的序号转坐标  x:横坐标/列 y:纵坐标/行  左上角的index定义为0
 function indexToCordinates(index) {
@@ -115,7 +140,7 @@ function drawUAV(cord) {
     }
     x = cord[0];
     y = cord[1];
-    if (map1[y][x] > 0) map1[y][x]--;
+    map1[y][x]--;
     drawMap(map1);
     ctx.drawImage(img_drone, x * pixel_length, y * pixel_length, pixel_length, pixel_length);
 }
@@ -126,9 +151,8 @@ function drawUAV(cord) {
 function drawPath(path, interval = 400) {
     var drawPathIndex = 0;
     map1 = [];
-    for (var i = 0; i < map.length; i++)
-    {
-        map1[i]=[];
+    for (var i = 0; i < map.length; i++) {
+        map1[i] = [];
         for (var j = 0; j < map[i].length; j++) {
             map1[i][j] = map[i][j];
         }
