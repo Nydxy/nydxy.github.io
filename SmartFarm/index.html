@@ -12,12 +12,6 @@
         <script src="bootstrap-4.3.1-dist\popper.min.js"></script>
         <script src="bootstrap-4.3.1-dist\bootstrap.min.js"></script>
         <script src="index.js"></script>
-
-        <script>
-
-
-        </script>
-
 </head>
 
 <body>
@@ -37,78 +31,130 @@
                 </button>
         </nav>
 
-        <div>
-
-                <div class="row m-0">
-                        <div class="col-2 p-0">
-                                <div class="list-group" id="list-tab" role="tablist">
-                                        <a class="list-group-item list-group-item-action rounded-0 active"
-                                                data-toggle="list" href="#" role="tab"
-                                                onclick="getMap('map1');">农场1号</a>
-                                        <a class="list-group-item list-group-item-action" data-toggle="list" href="#"
-                                                role="tab" onclick="getMap('map2');">农场2号</a>
-                                        <a class="list-group-item list-group-item-action" data-toggle="list" href="#"
-                                                role="tab" onclick="getMap('map3');">农场3号</a>
-                                        <a class="list-group-item list-group-item-action rounded-0" data-toggle="list"
-                                                href="#" role="tab" onclick="getMap('map4');">农场4号</a>
-                                </div>
+        <div class="row m-0">
+                <div class="col-2 p-0">
+                        <div class="list-group" id="list-tab" role="tablist">
+                                <a class="list-group-item list-group-item-action rounded-0 active" data-toggle="list"
+                                        href="#" role="tab" onclick="getMap('map1');">农场1号</a>
+                                <a class="list-group-item list-group-item-action" data-toggle="list" href="#" role="tab"
+                                        onclick="getMap('map2');">农场2号</a>
+                                <a class="list-group-item list-group-item-action" data-toggle="list" href="#" role="tab"
+                                        onclick="getMap('map3');">农场3号</a>
+                                <a class="list-group-item list-group-item-action rounded-0" data-toggle="list" href="#"
+                                        role="tab" onclick="toggleModal()">随机</a>
                         </div>
-                        <div class="col border d-flex p-1" id="myCanvas-container" style="height:600px">
-                                <canvas id="myCanvas"> 您的浏览器不支持HTML5！ </canvas>
+                </div>
+                <div class="col border d-flex p-1" id="myCanvas-container" style="height:600px">
+                        <canvas id="myCanvas"> 您的浏览器不支持HTML5！ </canvas>
 
-                        </div>
+                </div>
 
-                        <div class="col-3 p-3">
-                                <h5>无人机参数设置</h3>
-                                        <form class="form">
-                                                <div class="form-group row mb-0">
-                                                        <label for="input-uav-number"
-                                                                class="col col-form-label">无人机数量</label>
-                                                        <div class="col-7">
-                                                                <input class="form-control form-control-sm"
-                                                                        type="number" id="input-uav-number" value="1">
-                                                        </div>
+                <div class="col-3 p-3">
+                        <h5>无人机参数设置</h3>
+                                <form class="form">
+                                        <div class="form-group row mb-0">
+                                                <label for="input-uav-number"
+                                                        class="col-4 col-form-label">无人机起始位置</label>
+                                                <label for="input-uav-number"
+                                                        class="col col-form-label p-0 text-center">X</label>
+                                                <div class="col  p-0">
+                                                        <input class="form-control form-control-sm col" type="number"
+                                                                id="input-uav-x" value="0">
                                                 </div>
-                                                <div class="form-group row mb-0">
-                                                        <label for="input-uav-number"
-                                                                class="col col-form-label">无人机续航</label>
-                                                        <div class="col-7">
-                                                                <input class="form-control form-control-sm"
-                                                                        type="number" id="input-uav-number" value="20">
-                                                        </div>
-                                                </div>
-                                                <div class="form-group row mb-0">
-                                                        <label for="input-uav-number"
-                                                                class="col col-form-label">无人机载重</label>
-                                                        <div class="col-7">
-                                                                <input class="form-control form-control-sm"
-                                                                        type="number" id="input-uav-number" value="20">
-                                                        </div>
-                                                </div>
-                                                <div class="form-group">
-                                                        <input type="submit" class="btn btn-primary btn-block" />
-                                                </div>
-                                        </form>
-                                        <div class="card">
-                                                <div class="card-header">
-                                                        路径绘制控制
-                                                </div>
-                                                <div class="card-body">
-                                                        <div class="btn-group" role="group" aria-label="Basic example">
-                                                                <button type="button" class="btn btn-dark"
-                                                                        onClick="drawPath(path);">开始</button>
-                                                                <button type="button" class="btn btn-dark" onclick="clearInterval(action)">停止</button>
-                                                                <button type="button" class="btn btn-dark" onclick="drawMap(map)">重置</button>
-                                                        </div>
+                                                <label for="input-uav-number"
+                                                        class="col col-form-label p-0 text-center">Y</label>
+                                                <div class="col">
+                                                        <input class="form-control form-control-sm" type="number"
+                                                                id="input-uav-y" value="0">
                                                 </div>
 
                                         </div>
-                        </div>
-                </div>
+                                        <div class="form-group row mb-0">
+                                                <label for="input-uav-number" class="col col-form-label">无人机数量</label>
+                                                <div class="col-7">
+                                                        <input class="form-control form-control-sm" type="number"
+                                                                id="input-uav-number" value="1">
+                                                </div>
+                                        </div>
+                                        <div class="form-group row mb-0">
+                                                <label for="input-uav-continuation"
+                                                        class="col col-form-label">无人机续航</label>
+                                                <div class="col-7">
+                                                        <input class="form-control form-control-sm" type="number"
+                                                                id="input-uav-continuation" value="20">
+                                                </div>
+                                        </div>
+                                        <div class="form-group row mb-0">
+                                                <label for="input-uav-load" class="col col-form-label">无人机载重</label>
+                                                <div class="col-7">
+                                                        <input class="form-control form-control-sm" type="number"
+                                                                id="input-uav-load" value="20">
+                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                                <button type="button" class="btn btn-primary btn-block"
+                                                        onclick="findPath()">提交</button>
+                                        </div>
+                                </form>
+                                <div class="card">
+                                        <div class="card-header">
+                                                路径绘制控制
+                                        </div>
+                                        <div class="card-body">
+                                                <div class="btn-group" role="group" aria-label="Basic example">
+                                                        <button type="button" class="btn btn-dark"
+                                                                onClick="drawPath(path);">开始</button>
+                                                        <button type="button" class="btn btn-dark"
+                                                                onclick="clearInterval(action)">停止</button>
+                                                        <button type="button" class="btn btn-dark"
+                                                                onclick="drawMap(map)">重置</button>
+                                                </div>
+                                        </div>
 
+                                </div>
+                </div>
         </div>
 
-       
+        <!-- Modal -->
+        <div class="modal fade" id="randomModal" tabindex="-1" role="dialog" aria-labelledby="randomModal"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                                <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">随机地形</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                        </button>
+                                </div>
+                                <div class="modal-body">
+                                        <form class="form">
+                                                <div class="form-group">
+                                                        <label class="col col-form-label">农场宽（1-20）</label>
+                                                        <input class="form-control form-control-sm" type="number"
+                                                                id="random_farm_width" value="5" />
+                                                </div>
+                                                <div class="form-group">
+                                                        <label class="col col-form-label">农场高（1-20）</label>
+                                                        <input class="form-control form-control-sm" type="number"
+                                                                id="random_farm_height" value="5" />
+                                                </div>
+                                                <div class="form-group">
+                                                        <label for="random_farm_range">灾害程度</label>
+                                                        <input type="range" class="custom-range" min="1" max="5"
+                                                                id="random_farm_range" value="3">
+                                                </div>
+                                        </form>
+
+                                </div>
+                                <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                        <button type="button" class="btn btn-primary"
+                                                onclick="getRandomMap();">确定</button>
+                                </div>
+                        </div>
+                </div>
+        </div>
+
 </body>
 
 </html>

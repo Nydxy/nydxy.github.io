@@ -78,16 +78,16 @@ function drawMap(map) {
 
     //填充颜色和数字
     var sum = 0;
-    var max=0;
-    var min=10000;
+    var max = 0;
+    var min = 10000;
     for (var i = 0; i < map_height; i++) {
         for (var j = 0; j < map_width; j++) {
             var x = j * pixel_length;     //左上角的横坐标
             var y = i * pixel_length;     //左上角的纵坐标
             drawSquare(x, y, map[i][j], pixel_length);
             sum += map[i][j];
-            if (map[i][j]>max) max=map[i][j];
-            if (map[i][j]<min) min=map[i][j];
+            if (map[i][j] > max) max = map[i][j];
+            if (map[i][j] < min) min = map[i][j];
         }
     }
     var avg = sum / (map_height * map_width);
@@ -162,4 +162,102 @@ function drawPath(path, interval = 400) {
         drawPathIndex++;
         if (drawPathIndex >= path.length) clearInterval(action);
     }, interval);
+}
+
+function queryPath() {
+    var UAV_number = $("#input-uav-number").value();
+    var UAV_continuation = $("#input-uav-continuation").value();
+    var UAV_load = $("#input-uav-load").value();
+    $.post(
+        "60.129.77.149:8000",
+        {
+            "uav": {
+                "uav-number": UAV_number,
+                "uav-continuation": UAV_continuation,
+                "uav-load": UAV_load,
+            },
+            "map": map
+        },
+        function (data) {
+            drawPath(data);
+        }
+    )
+}
+
+//获取随机数
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+//生成随机地图  指定大小、灾害程度
+function getRandomMap() {
+    var width = document.getElementById("random_farm_width").value;
+    var height = document.getElementById("random_farm_height").value;
+    var range = document.getElementById("random_farm_range").value;
+    map = [];
+    for (var i = 0; i < height; i++) {
+        map[i] = [];
+        for (var j = 0; j < width; j++) {
+            map[i][j] = Math.floor(getRndInteger(0, 5) * range / 5);
+        }
+    }
+    toggleModal();
+    drawMap(map);
+}
+
+function toggleModal() {
+    $("#randomModal").modal("toggle");
+}
+
+function findPath() {
+    var x = parseInt(document.getElementById("input-uav-x").value);
+    var y = parseInt(document.getElementById("input-uav-y").value);
+    path = [];
+
+
+    //将map复制一份
+    map1 = [];
+    for (var i = 0; i < map.length; i++) {
+        map1[i] = [];
+        for (var j = 0; j < map[i].length; j++) {
+            map1[i][j] = map[i][j];
+        }
+    }
+   
+    findPathRecursion(x, y);
+    
+    while (isFinished()!=null){
+        var newstartpoint=isFinished();
+        x=newstartpoint[0];
+        y=newstartpoint[1];
+        findPathRecursion(x, y);
+    }
+    
+    drawPath(path);
+}
+
+function isFinished(){
+    for (var i = 0; i < map.length; i++) {
+        for (var j = 0; j < map[i].length; j++) {
+            if (map1[i][j]>0) return [j,i];
+        }
+    }
+    return null;
+}
+
+function findPathRecursion(x, y) {
+    path.push([x, y]);
+    console.log(`${x},${y}`);
+    if (map1[y][x] > 0) {
+        map1[y][x]--;
+        //drawUAV([x, y]);
+    }
+    var max_y = map1.length - 1;
+    var max_x = map1[0].length - 1;
+
+    if (y >= 0 && x >= 1 && y <= max_y && x - 1 <= max_x && map1[y][x - 1] > 0) findPathRecursion(x - 1, y);
+    if (y >= 1 && x >= 0 && y - 1 <= max_y && x <= max_x && map1[y - 1][x] > 0) findPathRecursion(x, y - 1);
+    if (y >= 0 && x >= 0 && y <= max_y && x + 1 <= max_x && map1[y][x + 1] > 0) findPathRecursion(x + 1, y);
+    if (y >= 0 && x >= 0 && y + 1 <= max_y && x <= max_x && map1[y + 1][x] > 0) findPathRecursion(x, y + 1);
+
 }
